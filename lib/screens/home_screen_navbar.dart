@@ -1,7 +1,7 @@
 import 'package:code_design/components/searchfield_widget.dart';
 import 'package:code_design/components/sidebar_button.dart';
 import 'package:flutter/material.dart';
-import '../constants.dart';
+import '../../constants.dart';
 
 class HomeScreenNavBar extends StatelessWidget {
   HomeScreenNavBar({required this.triggerAnimation});
