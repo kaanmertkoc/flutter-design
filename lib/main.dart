@@ -1,7 +1,8 @@
 import 'package:code_design/constants.dart';
-import 'package:code_design/model/course.dart';
+import 'package:code_design/screens/sidebar_screen.dart';
 import 'package:flutter/material.dart';
 import 'components/home_screen_navbar.dart';
+import 'components/lists/explore_course_list.dart';
 import 'components/lists/recent_course_list.dart';
 
 void main() {
@@ -12,128 +13,127 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          body: Container(
-            color: kBackgroundColor,
-            child: SafeArea(
-              child: Column(
-                children: [
-                  HomeScreenNavBar(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text("Recents", style: kLargeTitleStyle),
-                        SizedBox(
-                          height: 5.0,
-                        ),
-                        Text("23 courses, more coming", style: kSubtitleStyle),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  RecentCourseList(),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: 20.0, right: 20.0, top: 25.0, bottom: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          "Explore",
-                          style: kTitle1Style,
-                        ),
-                      ],
-                    ),
-                  ),
-                  ExploreCourseList(),
-                ],
-              ),
-            ),
-          ),
-        ));
+    return MaterialApp(debugShowCheckedModeBanner: false, home: HomeScreen());
   }
 }
 
-class ExploreCourseList extends StatelessWidget {
-  const ExploreCourseList({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  late Animation<Offset> sidebarAnimation;
+  late Animation<double> fadeAnimation;
+  late AnimationController sidebarAnimationController;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 120,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        itemCount: exploreCourses.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: EdgeInsets.only(left: index == 0 ? 20.0 : 0.0),
-            child: ExploreCourseCard(course: exploreCourses[index]),
-          );
-        },
-      ),
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    sidebarAnimationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 250),
+    );
+    sidebarAnimation = Tween<Offset>(
+      begin: Offset(-1, 0),
+      end: Offset(0, 0),
+    ).animate(
+      CurvedAnimation(
+          parent: sidebarAnimationController, curve: Curves.easeInOut),
+    );
+    fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+          parent: sidebarAnimationController, curve: Curves.easeInOut),
     );
   }
-}
 
-class ExploreCourseCard extends StatelessWidget {
-  ExploreCourseCard({required this.course});
-  final Course course;
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    sidebarAnimationController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(right: 20.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(41.0),
-        child: Container(
-          height: 120.0,
-          width: 280.0,
-          decoration: BoxDecoration(gradient: course.background),
-          child: Padding(
-            padding: EdgeInsets.only(left: 32.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        course.courseSubtitle,
-                        style: kCardSubtitleStyle,
-                      ),
-                      SizedBox(
-                        height: 6.0,
-                      ),
-                      Text(
-                        course.courseTitle,
-                        style: kCardTitleStyle,
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+    return Scaffold(
+      body: Container(
+          color: kBackgroundColor,
+          child: Stack(
+            children: [
+              SafeArea(
+                child: Column(
                   children: [
-                    Image.asset(
-                      'asset/illustrations/${course.illustration}',
-                      fit: BoxFit.cover,
-                      height: 100.0,
+                    HomeScreenNavBar(
+                      triggerAnimation: () {
+                        sidebarAnimationController.forward();
+                      },
                     ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text("Recents", style: kLargeTitleStyle),
+                          SizedBox(
+                            height: 5.0,
+                          ),
+                          Text("23 courses, more coming",
+                              style: kSubtitleStyle),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    RecentCourseList(),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: 20.0, right: 20.0, top: 25.0, bottom: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            "Explore",
+                            style: kTitle1Style,
+                          ),
+                        ],
+                      ),
+                    ),
+                    ExploreCourseList(),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
+              ),
+              Stack(
+                children: [
+                  FadeTransition(
+                    opacity: fadeAnimation,
+                    child: GestureDetector(
+                      child: Container(
+                        color: Color.fromRGBO(36, 38, 41, 0.4),
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                      ),
+                      onTap: () {
+                        sidebarAnimationController.reverse();
+                      },
+                    ),
+                  ),
+                  SlideTransition(
+                    position: sidebarAnimation,
+                    child: SafeArea(
+                      child: SidebarScreen(),
+                      bottom: false,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          )),
     );
   }
 }

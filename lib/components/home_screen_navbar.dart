@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import '../constants.dart';
 
 class HomeScreenNavBar extends StatelessWidget {
-  const HomeScreenNavBar({Key? key}) : super(key: key);
+  HomeScreenNavBar({required this.triggerAnimation});
+  final Function triggerAnimation;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,9 @@ class HomeScreenNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SidebarButton(),
+          SidebarButton(
+            triggerAnimation: triggerAnimation,
+          ),
           SearchFieldWidget(),
           Icon(
             Icons.notifications,
