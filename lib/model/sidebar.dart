@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SidebarItem {
@@ -30,7 +32,9 @@ var sidebarItem = [
         Color(0xFFC23D61),
       ],
     ),
-    icon: Icon(Icons.library_books, color: Colors.white),
+    icon: Icon(
+        Platform.isAndroid ? Icons.library_books : CupertinoIcons.book_solid,
+        color: Colors.white),
   ),
   SidebarItem(
     title: "Billings",
@@ -54,6 +58,8 @@ var sidebarItem = [
         Color(0xFF202A78),
       ],
     ),
-    icon: Icon(Icons.settings, color: Colors.white),
+    icon: Icon(
+        Platform.isAndroid ? Icons.settings : CupertinoIcons.settings_solid,
+        color: Colors.white),
   ),
 ];
